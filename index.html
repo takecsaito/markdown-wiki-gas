@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8"/>
+    <base target="_top"/>
+    <!-- STYLES -->
+    <?!=include('styles');?>
+    <!-- SCRIPTS -->
+    <?!=include('scripts');?>
+    <script>
+    // Markdown text data.
+    const md = '<?=md?>';
+    const nav = '<?=nav?>';
+    const url = '<?=url?>';
+    </script>
+  </head>
+  <body>
+    <nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light"></nav>
+
+    <div class="container">
+      <div class="row">
+        <div id="toc" class="col-md-3 px-0">
+          <div class="p-3"><!-- toc --></div>
+        </div>
+        <div class="contents col-md-9 pl-1">
+          <div id="contents" class="p-3"><!-- contents --></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading Dialog -->
+    <div class="modal fade" id="loading" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-body text-center">
+            <div><i class="fas fa-spinner fa-spin"></i></div>
+            <p>Loading Wiki...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
