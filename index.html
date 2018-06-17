@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja">
   <head>
+    <title>markdown-wiki</title>
     <meta charset="UTF-8"/>
     <base target="_top"/>
     <!-- STYLES -->
@@ -9,15 +10,20 @@
     <?!=include('scripts');?>
     <script>
     // Markdown text data.
-    const md = '<?=md?>';
+    const md  = '<?=md?>';
     const nav = '<?=nav?>';
     const url = '<?=url?>';
+    const updatedAt = new Date( '<?=updatedAt?>' );
+    const owner     = '<?=owner?>';
     </script>
   </head>
   <body>
     <nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light"></nav>
 
     <div class="container">
+      <div class="row">
+        <div class="col-md-12 text-right text-secondary">オーナー : <span id="owner"></span> 更新日時 : <span id="updatedAt"></span></div>
+      </div>
       <div class="row">
         <div id="toc" class="col-md-3 px-0">
           <div class="p-3"><!-- toc --></div>
@@ -33,7 +39,7 @@
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
           <div class="modal-body text-center">
-            <div><i class="fas fa-spinner fa-spin"></i></div>
+            <div><i class="fas fa-2x fa-spinner fa-spin"></i></div>
             <p>Loading Wiki...</p>
           </div>
         </div>

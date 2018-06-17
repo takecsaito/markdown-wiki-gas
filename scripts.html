@@ -12,6 +12,8 @@
 <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.2/underscore-min.js"></script>
 <!-- highlight -->
 <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<!-- date-fns -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/date-fns/1.29.0/date_fns.min.js"></script>
 <script>
 $(function(){
   
@@ -24,7 +26,8 @@ $(function(){
     }
   });
 
-  const generateToc = (_md) => {
+  // Generate TOC from Markdown headers.
+  const generateToc = ( _md ) => {
     // Generate TOC.
     const generator = new TocGenerator();
     const toc = generator.run( _md );
@@ -48,16 +51,16 @@ $(function(){
     html = html
       // navbar
       .replace( /<h1 id=".+">/, '<a class="navbar-brand">' )
-      .replace( '</h1>', '</a>' )
-      .replace( '<ul>', '<div class="collapse navbar-collapse"><ul class="navbar-nav">' )
+      .replace( '</h1>'       , '</a>' )
+      .replace( '<ul>'        , '<div class="collapse navbar-collapse"><ul class="navbar-nav">' )
       // divider
-      .replace( /<li><hr>/g, '<li class="divider">' )
-      .replace( /<li>/g, '<li class="nav-item">' )
-      .replace( /<a/g, '<a class="nav-link"' )
+      .replace( /<li><hr>/g   , '<li class="divider">' )
+      .replace( /<li>/g       , '<li class="nav-item">' )
+      .replace( /<a/g         , '<a class="nav-link"' )
       // dropdown-header
-      .replace( /<h1/g, '<h1 class="dropdown-header"' )
+      .replace( /<h1/g        , '<h1 class="dropdown-header"' )
       // links
-      .replace( /href="/g, 'href="' + url + '?md=' )
+      .replace( /href="/g     , 'href="' + url + '?md=' )
       // brand link
       .replace( /class="navbar-brand"/, 'class="navbar-brand" href="' + url + '"' );
 //console.log(html);
@@ -68,40 +71,48 @@ $(function(){
     $( 'ul.navbar-nav > li:has("ul") > a' )
       .addClass( 'dropdown-toggle' )
       .attr    ( 'data-toggle', 'dropdown' )
-      .append  ( ' <span class="caret"></span>' );
-    $( 'nav ul li ul' ).addClass( 'dropdown-menu' );
+      .append  ( '<span class="caret"></span>' );
+    $( 'nav ul li ul' )
+      .addClass( 'dropdown-menu' );
   }
  
   // 目次クリック時にページ内移動する
-  $( '#toc a' ).on( 'click', (e) => {
-    let a = e.currentTarget;
-    let hash = decodeURI( a.href.substr( a.href.lastIndexOf('#') + 1 ) );
-    let h = $( ":header:contains('" + hash + "')" );
+  $( '#toc' ).on( 'click', 'a', ( e ) => {
+    const a = e.currentTarget;
+    const hash = decodeURI( a.href.substr( a.href.lastIndexOf('#') + 1 ) );
+    const h = $( ":header:contains('" + hash + "')" );
     $( 'html, body' ).animate( { scrollTop: h.offset().top - 60 }, 'fast' );  // Adjusted for fixed-top navbar.
-    return false;
+    e.preventDefault();
   });
 
   // リンククリック時
   $( '.nav-link' ).on( 'click', (e) => {
     let a = e.currentTarget;
     if( a.href.endsWith( '.md' ) ){
-//console.log(a.href.slice(a.href.indexOf("md=")+3));
-      //$( 'ul.dropdown-menu' )
-      const path = a.href.slice(a.href.indexOf("md=")+3);
-      const cb = (data) => {
-        $( '#contents' ).html( marked( data ) );
-        generateToc(data);
+      const path = a.href.slice( a.href.indexOf( "md=" ) + 3 );
+      const cb = ( json ) => {
+        const data = JSON.parse( json );
+        $( '#contents' ).html( marked( data.content ) );
+        generateToc( data.content );
         // Hide loading dialog.
         $( '#loading' ).modal( 'hide' );
+        // Set updateAt.
+        $( '#updatedAt' ).text( dateFns.format( new Date( data.updatedAt ), 'YYYY-MM-DD' ));
       };
+      // Run Google Apps Script 'add' function.
       google.script.run
-                   .withSuccessHandler((data) => cb(data))
-                   .add(path);
+                   .withSuccessHandler( ( json ) => cb( json ))
+                   .getContent( path );
       e.preventDefault();
       // Show loading dialog.
       $( '#loading' ).modal( 'show' );
     }
   });
+
+  // 更新日時をセット
+  $( '#updatedAt' ).text( dateFns.format( updatedAt, 'YYYY-MM-DD' ));
+  // 更新者をセット
+  $( '#owner'     ).text( owner );
 });
 
 class Item {
