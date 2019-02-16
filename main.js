@@ -2,36 +2,38 @@ var ERROR_CODE = '__ERROR__';
 // [Underscore]
 var _ = Underscore.load();
 // [base folder path]
-var basefolder = "memo/content/";
+var basefolder = 'memo/content/';
 // [URL]
 //var url = "https://script.google.com/a/systena.co.jp/macros/s/AKfycbwUJlR4-3uCHnza-rPDXzBJYmjsFJo5uLa3Bk1Si7gDaxpKUmM9/exec"
-var url = "https://script.google.com/a/systena.co.jp/macros/s/AKfycbzltnMN7caGU51xhXpyKJ0iM3tUHsrXmau93DwyV4hw/dev"
+var url = 'https://script.google.com/a/systena.co.jp/macros/s/AKfycbzltnMN7caGU51xhXpyKJ0iM3tUHsrXmau93DwyV4hw/dev';
+
 function doGet( e ) {
   Logger.log( e );
   // template
-  var t = HtmlService.createTemplateFromFile( 'index' );
+  var template = HtmlService.createTemplateFromFile( 'index' );
   // url
-  t.url = url;
+  template.url = url;
   // set data
   var data = [];
-  t.data = JSON.stringify( data );
+  template.data = JSON.stringify( data );
   
   // Read markdown contents.
+  var file = null;
   if( e.parameters.md )
-    var f = getFile( e.parameters.md );
+    file = getFile( e.parameters.md );
   else
-    var f = getFile( 'index.md' );
+    file = getFile( 'index.md' );
 
-  t.md        = f.content;
-  t.updatedAt = f.updatedAt;
-  t.owner     = f.owner;
+  template.md        = file.content;
+  template.updatedAt = file.updatedAt;
+  template.owner     = file.owner;
   
   // Read nav.md
   var nav = getFile( 'nav.md' ).content;
-  t.nav = nav == ERROR_CODE ? '' : nav; 
+  template.nav = nav == ERROR_CODE ? '' : nav; 
   
   // Return content.
-  return t.evaluate().setTitle( "markdown-wiki - TOP" );
+  return template.evaluate().setTitle( 'markdown-wiki - TOP' );
 }
 
 function getContent( path ) {
@@ -56,8 +58,8 @@ function _getObject( level, patharr, base ){
 function getFile( path ){
   var p = basefolder + path;
   try {
-    var file = _getObject( 0, p.toString().split( "/" ) );
-Logger.log( file.getEditors().length ? file.getEditors() : file.getOwner() );
+    var file = _getObject( 0, p.toString().split( '/' ) );
+    Logger.log( file.getEditors().length ? file.getEditors() : file.getOwner() );
     return {
       content   : file.getBlob().getDataAsString(),
       updatedAt : file.getLastUpdated(),
