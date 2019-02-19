@@ -41,7 +41,11 @@ $(function(){
   generateToc(md);
   
   // Convert Markdown to HTML.
-  $( '#contents' ).html( marked( md ) );
+  let content = marked( md );
+  $( '#contents' ).html( content
+                          // リンクのURLを変換
+                          .replace( /href="/g, 'href="' + url + '?md=' )
+                       );
 
   // nav.md を読み込む
   if( nav ){
@@ -89,6 +93,15 @@ $(function(){
   $( '.nav-link' ).on( 'click', (e) => {
     let a = e.currentTarget;
     if( a.href.endsWith( '.md' ) ){
+      // Show loading dialog.
+      $( '#loading' ).modal( 'show' );
+    }
+  });
+/*
+  // リンククリック時
+  $( '.nav-link' ).on( 'click', (e) => {
+    let a = e.currentTarget;
+    if( a.href.endsWith( '.md' ) ){
       const path = a.href.slice( a.href.indexOf( "md=" ) + 3 );
       const cb = ( json ) => {
         const data = JSON.parse( json );
@@ -108,11 +121,9 @@ $(function(){
       $( '#loading' ).modal( 'show' );
     }
   });
-
+*/
   // 更新日時をセット
-  $( '#updatedAt' ).text( dateFns.format( updatedAt, 'YYYY-MM-DD' ));
-  // 更新者をセット
-  $( '#owner'     ).text( owner );
+  $( '#updatedAt' ).text( dateFns.format( updatedAt, 'YYYY-MM-DD HH:mm' ));
 });
 
 class Item {

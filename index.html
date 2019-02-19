@@ -14,7 +14,6 @@
     const nav = '<?=nav?>';
     const url = '<?=url?>';
     const updatedAt = new Date( '<?=updatedAt?>' );
-    const owner     = '<?=owner?>';
     </script>
   </head>
   <body>
@@ -22,7 +21,9 @@
 
     <div class="container">
       <div class="row">
-        <div class="col-md-12 text-right text-secondary">オーナー : <span id="owner"></span> 更新日時 : <span id="updatedAt"></span></div>
+        <div class="col-md-12 text-right text-secondary">
+          オーナー : <span id="owner"><?=owner?></span> 
+          更新日時 : <span id="updatedAt"></span></div>
       </div>
       <div class="row">
         <div id="toc" class="col-md-3 px-0">
